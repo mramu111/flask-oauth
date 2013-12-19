@@ -3,9 +3,8 @@ from flask_oauth import OAuth
 
 
 # You must configure these 3 values from Google APIs console
-# https://code.google.com/apis/console
-GOOGLE_CLIENT_ID = '<Client-ID>'
-GOOGLE_CLIENT_SECRET = '<Client-secret>'
+# https://code.google.com/apis/consoleUGOOGLE_CLIENT_ID = '<Client-ID>'
+GOOGLE_CLIENT_ID = '342128868103.apps.googleusercontent.com'
 REDIRECT_URI = '/authorized'  # one of the Redirect URIs from Google APIs console
 
 SECRET_KEY = 'development key'
@@ -15,6 +14,7 @@ app = Flask(__name__)
 app.debug = DEBUG
 app.secret_key = SECRET_KEY
 oauth = OAuth()
+GOOGLE_CLIENT_SECRET= 'WjTDB9_E8LgLtUkKjvMcxrvA'
 
 google = oauth.remote_app('google',
                           base_url='https://www.google.com/accounts/',

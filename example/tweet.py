@@ -7,7 +7,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 # configuration
-DATABASE_URI = 'sqlite:////tmp/flask-oauth.db'
+DATABASE_URI = 'sqlite:////tmp/flask-oauth2.db'
 SECRET_KEY = 'development key'
 DEBUG = True
 
@@ -21,7 +21,7 @@ oauth = OAuth()
 twitter = oauth.remote_app('twitter',
     # unless absolute urls are used to make requests, this will be added
     # before all URLs.  This is also true for request_token_url and others.
-    base_url='https://api.twitter.com/1/',
+    base_url='https://api.twitter.com/1.1/',
     # where flask should look for new request tokens
     request_token_url='https://api.twitter.com/oauth/request_token',
     # where flask should exchange the token with the remote application
@@ -32,8 +32,8 @@ twitter = oauth.remote_app('twitter',
     # user interface on the twitter side.
     authorize_url='https://api.twitter.com/oauth/authenticate',
     # the consumer keys from the twitter application registry.
-    consumer_key='xBeXxg9lyElUgwZT6AZ0A',
-    consumer_secret='aawnSpNTOVuDCjx7HMh6uSXetjNN8zWLpZwCEU4LBrk'
+    consumer_key='Oaq744EHMXmhiT3CRdfZfw',  #'xBeXxg9lyElUgwZT6AZ0A',
+    consumer_secret='AVyY9BQTs8VyCW7C0J8QmgnOGM9cWNOhx4lTXNlCmM'  #'aawnSpNTOVuDCjx7HMh6uSXetjNN8zWLpZwCEU4LBrk'
 )
 
 # setup sqlalchemy
@@ -103,6 +103,7 @@ def index():
 @app.route('/tweet', methods=['POST'])
 def tweet():
     """Calls the remote twitter API to create a new status update."""
+    #import pdb;pdb.set_trace()
     if g.user is None:
         return redirect(url_for('login', next=request.url))
     status = request.form['tweet']
@@ -111,12 +112,14 @@ def tweet():
     resp = twitter.post('statuses/update.json', data={
         'status':       status
     })
+    #import pdb;pdb.set_trace()
     if resp.status == 403:
         flash('Your tweet was too long.')
     elif resp.status == 401:
         flash('Authorization error with Twitter.')
     else:
-        flash('Successfully tweeted your tweet (ID: #%s)' % resp.data['id'])
+        flash('Successfully tweeted your tweet (ID: #%s)' %
+                resp.data.get('id','mramu7899'))
     return redirect(url_for('index'))
 
 
@@ -171,6 +174,7 @@ def oauth_authorized(resp):
     user.oauth_token = resp['oauth_token']
     user.oauth_secret = resp['oauth_token_secret']
     db_session.commit()
+    #import pdb;pdb.set_trace()
 
     session['user_id'] = user.id
     flash('You were signed in')
@@ -178,4 +182,5 @@ def oauth_authorized(resp):
 
 
 if __name__ == '__main__':
+    init_db()
     app.run()
